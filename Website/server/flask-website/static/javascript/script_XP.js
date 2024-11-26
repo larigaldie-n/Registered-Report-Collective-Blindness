@@ -11,6 +11,5 @@ function handleData()
     {
         document.getElementById("chk_option_error").style.visibility = "hidden";
       return true;
-    }
-    
+    }   
 }

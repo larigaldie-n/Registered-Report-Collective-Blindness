@@ -16,9 +16,10 @@ def data_submission(row, variable):
         return round(float(request.form.get(hashlib.sha1(row["Argument"].encode("UTF-8")).hexdigest() + "-agreement-contacts")), 5)
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    return render_template("index.html", user=uuid.uuid4())
+    user = request.args.get("user")
+    return render_template("index.html", user=user)
 
 
 @app.route('/XP/', methods=['GET'])

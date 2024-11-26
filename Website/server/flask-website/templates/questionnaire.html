@@ -5,10 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <script src="{{ url_for('static', filename='javascript/script_questionnaire.js') }}"></script>
     <title>Questionnaire</title>
 </head>
 <body>
-    <section class="main" id="main">
+    <section class="main" id="pressKey">
+        <div class="instructions">
+            <p>Please press the "S" key to continue the study</p>
+        </div>
+    </section>
+    <section class="main" id="mainHidden">
         <div class="instructions">
             <p>All previously displayed statements will now be presented again, this time arranged by topic.</p>
             <p>Rank how much you agree with the each statement using the scale (from "strongly disagree" to "strongly agree"). Also, rate how much you think most people you connect with on your chosen social media platform agree with the statement (from "contacts strongly disagree” to “contacts strongly agree”).</p>
