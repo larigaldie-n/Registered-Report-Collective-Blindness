@@ -103,7 +103,7 @@ if __name__ == '__main__':
         os.makedirs(folder)
     local_file_name = os.path.join(folder, f'{PID_before}.edf')
 
-    website = r"https://bldrrreview.eu.pythonanywhere.com/?user=" + PID
+    website = r"https://bldrrreview.eu.pythonanywhere.com/?user=" + PID_before
 
     fps = 20.0
     queue: mp.Queue = mp.Queue()
