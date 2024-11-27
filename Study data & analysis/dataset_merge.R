@@ -19,7 +19,12 @@ pick_fixation_time <- function()
     idx_name <- idx_name + 1
     d_fixations$img <- ifelse(d_fixations$Corrected.Fixation.Y <28800, "top", "bottom")
     d_fixations$Corrected.Fixation.Y.img <- ifelse(d_fixations$Corrected.Fixation.Y <28800, d_fixations$Corrected.Fixation.Y, d_fixations$Corrected.Fixation.Y-28800)
-    d_fixations$N_frame_video <- paste0("frame ", floor(d_fixations$Timestamp / 33.333))
+    N_frames_video <- c()
+    for(time in d_fixations$Timestamp)
+    {
+      N_frames_video <- c(N_frames_video, (d %>% filter(grepl("Frame", Data, fixed=TRUE), Timestamp<time) %>% slice_tail(1))$Data)
+    }
+    d_fixations$N_frame_video <- N_frames_video
     write.csv(d_fixations, file = file.path("..", "Fixation check", "ET_check", file_name), row.names = FALSE)
     file.copy(response_file, file.path("..", "Fixation check", "order_files", basename(response_file)))
   }
