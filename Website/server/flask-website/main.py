@@ -69,9 +69,14 @@ def ending():
     user = request.form.get("user")
     condition = int(request.form.get("condition"))
     this_folder = Path(__file__).parent.resolve()
+    random_list_path = this_folder / ("random_list.csv")
     rendered_path = this_folder / (
             "results/" + user + ".csv")
     data = pd.read_csv(rendered_path, encoding="utf-8")
+    data_random_list = pd.read_csv(random_list_path, encoding="utf-8")
+    next_idx = data_random_list[pd.isnull(data_random_list.user)].first_valid_index()
+    data_random_list.loc[next_idx, "user"] = user
+    data_random_list.to_csv(random_list_path, index=False)
     data["Agreement"] = data.apply(data_submission, variable="Agreement", axis=1)
     data["Agreement.Contacts"] = data.apply(data_submission, variable="Agreement.Contacts", axis=1)
     if condition==1:
@@ -92,18 +97,12 @@ def ending():
 @app.route('/instructions/', methods=['GET'])
 def instructions():
     user = request.args.get("user")
-    max_per_condition = 5
     this_folder = Path(__file__).parent.resolve()
-    num_cond0 = len([x for x in os.listdir(this_folder / "results/") if x[0] == 'Z'])
-    num_cond1 = len([x for x in os.listdir(this_folder / "results/") if x[0] != 'Z'])
-    if(num_cond0 == max_per_condition and num_cond1 == max_per_condition):
-        condition = 2
-    elif(num_cond0 == max_per_condition):
-        condition = 1
-    elif(num_cond1 == max_per_condition):
-        condition = 0
+    random_list_path = this_folder / ("random_list.csv")
+    data_random_list = pd.read_csv(random_list_path, encoding="utf-8")
+    next_idx = data_random_list[pd.isnull(data_random_list.user)].first_valid_index()
+    if(next_idx!=None):
+        condition = data_random_list.loc[next_idx, "condition"]
     else:
-        condition = random.randint(0, 1)
-    if(condition==0):
-        user = 'Z' + user
+        condition = 2
     return render_template("instructions.html", user=user, condition=condition)

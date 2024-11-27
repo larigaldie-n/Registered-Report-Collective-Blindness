@@ -29,8 +29,8 @@ extension = 'csv'
 files = glob.glob('./ET_check/*.{}'.format(extension))
 start_coordinate = 274
 shift_coordinate = 380
-x_left = 300
-x_right = 1585
+x_left = 316
+x_right = 1602
 y_shift = 295
 
 list_roi = dict()

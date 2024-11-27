@@ -69,10 +69,10 @@ def grab(queue: mp.Queue, fps, queue_csv: mp.Queue, start_time, queue_terminatio
                 break
 
 
-def record(queue: mp.Queue, fps, queue_csv: mp.Queue, monitor_width, monitor_height, file_name):
+def record(queue: mp.Queue, fps, queue_csv: mp.Queue, monitor_width, monitor_height, file_name, video_file_name):
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    vid = cv2.VideoWriter(f'{file_name}.mp4', fourcc, fps, (monitor_width, monitor_height))
+    vid = cv2.VideoWriter(f'{video_file_name}.mp4', fourcc, fps, (monitor_width, monitor_height))
     file = open(f'{file_name}.csv', "w", newline="")
     writer = csv.writer(file)
     writer.writerow(["Timestamp", "Source", "Data"])
@@ -97,6 +97,9 @@ if __name__ == '__main__':
     PID = PID[-8:]
     monitor_width = 1920
     monitor_height = 1080
+    video_folder = os.path.join(f"Videos")
+    if not os.path.exists(video_folder):
+        os.makedirs(video_folder)
     folder = os.path.join(f"Data")
     file_name = f'{PID}.edf'
     if not os.path.exists(folder):
@@ -118,6 +121,8 @@ if __name__ == '__main__':
                                              queue_termination, monitor_width, monitor_height))
     recording = mp.Process(target=record, args=(queue, fps, queue_csv, monitor_width, monitor_height,
                                                 os.path.join(folder,
+                                                             f'{PID_before}'),
+                                                os.path.join(video_folder,
                                                              f'{PID_before}')))
     grabbing.start()
     recording.start()
@@ -155,4 +160,4 @@ if __name__ == '__main__':
     queue_termination.put(None)
     recording.join()
     mouse_listener.stop()
-    pylink.msecDelay(2000)
+    pylink.msecDelay(1000)

@@ -55,13 +55,11 @@ extract_dwell_times <- function(dataset, size, start_coordinate, shift_coordinat
           else
           {
             ## Some hits will be missed because samples are not continuous.
-            ## The refresh rate is 120Hz (one image every 8.333ms), so on
+            ## The refresh rate is 1000Hz (one image every 1ms), so on
             ## average, we can consider that any period of viewing started 
-            ## (1/2)*8.333 earlier, and ended (1/2)*8.333 later. iMotions does
-            ## this correction for fixation durations, but we have to do it
-            ## manually since we consider all gaze data. This also allows us to
+            ## 0.5ms earlier, and ended 0.5ms later. This allows us to
             ## not have a 0ms time for a single quick gaze (saccade) in the area
-            acc <- acc + 8.333
+            acc <- acc + 1
           }
           ts <- d_match[[i, "Timestamp"]]
         }
@@ -81,8 +79,8 @@ datasets_merge <- function()
   if (!dir.exists(file.path("final_data"))) {dir.create(file.path("final_data"))}
   start_coordinate <- 274
   shift_coordinate <- 380
-  x_left <- 300
-  x_right <- 1585
+  x_left <- 316
+  x_right <- 1602
   y_shift <- 295
   
   ET_files         <- list.files(file.path("intermediate_data", "ET"), pattern="*.csv", full.names = TRUE)

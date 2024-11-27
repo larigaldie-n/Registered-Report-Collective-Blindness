@@ -4,4 +4,4 @@ window.addEventListener("keydown", function (event) {
 			document.getElementById("pressKey").remove()
 			document.getElementById("mainHidden").style.visibility = "visible";
 		}
-}}, {once: true});
+}});

@@ -2,16 +2,18 @@ library(png)
 library(tidyverse)
 library(eyeScrollR)
 
-# First, remove Z in file names (used by the Flask server for a simplified
-# counting of participants per condition)
-# Then, exclude bad or incomplete data sets (poor calibration, eye tracker files
+# First, convert eyeLink data files in an eyeScrollR-readable format, and merges
+# data with input recording
+source("convert_eyeLink.R")
+merge_inputs_ET()
+
+# Exclude bad or incomplete data sets (eye tracker files
 # without an associated response file and conversely, no responses in the
 # response file, low frequency of eye tracking data)
 source("preprocessing.R")
-remove_Z()
 exclude()
 
-# Takes files from /raw_data/ET_raw (raw eye tracker files from iMotions), and
+# Takes files from /raw_data/ET_raw (converted eye tracker files), and
 # outputs eyeScrollR-corrected files into /intermediate_data/ET/
 source("eyeScrollR_make.R")
 eyeScrollR_make()

@@ -1,12 +1,3 @@
-remove_Z <- function()
-{
-  responses_files_Z <- list.files(path=file.path("raw_data", "responses"), pattern="^Z.*.csv", full.names = TRUE, recursive = TRUE)
-  lapply(responses_files_Z, function(x) {
-    new_filename <- substring(basename(x), 2)
-    file.rename(x, file.path(dirname(x), new_filename))
-  })
-}
-
 exclude <- function()
 {
   if (!file.exists("exclusion_log.txt")) {file.create("exclusion_log.txt")}
@@ -17,20 +8,10 @@ exclude <- function()
     path <- x
     response_file  <- file.path("raw_data", "responses", filename)
     
-    bindata <- setdiff(strsplit(readBin(x, character(), n = 1), ',', fixed=TRUE)[[1]], "")
-    index <- which(bindata == "\r\n#Gaze Calibration") + 1
-    calibration_result <- tolower(bindata[index])
-    
     if(!(file.exists(response_file)))
     {
       path <- file.path("excluded_data", "ET_raw", filename)
       cat(paste(filename, "Reason: No associated response file", sep=", "), file="exclusion_log.txt", sep="\n", append=TRUE)
-    }
-    else if(calibration_result == "poor")
-    {
-      path <- file.path("excluded_data", "ET_raw", filename)
-      cat(paste(filename, "Reason: Poor calibration", sep=", "), file="exclusion_log.txt", sep="\n", append=TRUE)
-      file.rename(response_file, file.path("excluded_data", "responses", filename))
     }
     else
     {
@@ -47,7 +28,7 @@ exclude <- function()
         max_ts <- max(d_ET$Timestamp)
         d_freq <- d_ET %>% filter(!is.na(Gaze.X))
         
-        if(nrow(d_freq)/(max_ts/1000)<60)
+        if(nrow(d_freq)/(max_ts/1000)<250)
         {
           path <- file.path("excluded_data", "ET_raw", filename)
           cat(paste(filename, "Reason: low frequency of data", nrow(d_ET)/(max_ts/1000), sep=", "), file="exclusion_log.txt", sep="\n", append=TRUE)
