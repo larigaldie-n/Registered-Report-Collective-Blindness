@@ -1,6 +1,11 @@
 library(png)
 library(tidyverse)
 library(eyeScrollR)
+### NB: eyeScrollR is not on CRAN. To install eyeScrollR, you can use Devtools
+# and the following command:
+# devtools::install_github("larigaldie-n/eyeScrollR")
+# More info in eyeScrollR's paper:
+# https://doi.org/10.3758/s13428-024-02343-1
 
 # First, convert eyeLink data files in an eyeScrollR-readable format, and merges
 # data with input recording

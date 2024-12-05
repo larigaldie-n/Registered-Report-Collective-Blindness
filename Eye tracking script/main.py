@@ -1,5 +1,3 @@
-# Written by Nathanael Larigaldie
-
 import math
 import time
 import multiprocessing as mp

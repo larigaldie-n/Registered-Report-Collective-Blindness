@@ -1,7 +1,7 @@
 exclude <- function()
 {
   if (!file.exists("exclusion_log.txt")) {file.create("exclusion_log.txt")}
-  if (!dir.exists(file.path("excluded_data", "responses"))) {dir.create(file.path("excluded_data", "responses"))}
+  if (!dir.exists(file.path("excluded_data", "responses"))) {dir.create(file.path("excluded_data", "responses"), recursive = TRUE)}
   ET_files <- list.files(path=file.path("raw_data", "ET_raw"), pattern="*.csv", full.names = TRUE, recursive = TRUE)
   lapply(ET_files, function(x) {
     filename <- basename(x)

@@ -24,14 +24,21 @@ eyeScrollR_make <- function()
                                calibration = calibration,
                                scroll_lag = get_scroll_lag(refresh_rate = 60, n_frame = 2))
     
-    d_ET_end <- d_ET %>% filter(grepl("MouseEvent:Button.left.Pressed", Data, fixed=TRUE)) %>% mutate(mouse_X = str_extract_all(Data, "\\d+", simplify=TRUE)[,1], mouse_Y = str_extract_all(Data, "\\d+", simplify=TRUE)[,2] + Scroll)
+    d_ET_end <- d_ET %>% filter(grepl("MouseEvent:Button.left.Pressed", Data, fixed=TRUE)) %>% mutate(mouse_X = as.numeric(str_extract_all(Data, "\\d+", simplify=TRUE)[,1]), mouse_Y = as.numeric(str_extract_all(Data, "\\d+", simplify=TRUE)[,2]))
+    d_ET_end <- d_ET_end %>% rowwise() %>% mutate(mouse_Y = mouse_Y + (Corrected.Fixation.Y - Fixation.Y))
     
-    # Get the first click on coordinates on the webpage corresponding to the "Finished reading" button
-    ET_end <- (d_ET_end %>% filter(mouse_Y>=38387, mouse_Y<=38474, mouse_X>=816, mouse_X<=1103) %>% slice_head(n=1))$Timestamp
+    # Get the last click on coordinates on the webpage corresponding to the "Finished reading" button
+    ET_end <- (d_ET_end %>% filter(mouse_Y>=38387, mouse_Y<=38474, mouse_X>=816, mouse_X<=1103) %>% slice_tail(n=1))$Timestamp
     
-    d_ET <- d_ET %>% filter(Timestamp<ET_end) %>%
-      select(Timestamp = Timestamp.Shifted, Source, Data, Gaze.X, Gaze.Y, Corrected.Gaze.X, Corrected.Gaze.Y, Corrected.Fixation.X, Corrected.Fixation.Y, Scroll)
-    
+    if(length(ET_end)==0)
+    {
+      warning(paste0("No click on 'Finished reading' button detected for participant ", ET_files_names[[i]]))
+    }
+    else
+    {
+      d_ET <- d_ET %>% filter(Timestamp<ET_end) %>%
+        select(Timestamp = Timestamp.Shifted, Source, Data, Gaze.X, Gaze.Y, Corrected.Gaze.X, Corrected.Gaze.Y, Corrected.Fixation.X, Corrected.Fixation.Y, Scroll)
+    }
     write_csv(d_ET, file = file.path("intermediate_data", "ET", ET_files_names[i]), na = "")
   }
 }

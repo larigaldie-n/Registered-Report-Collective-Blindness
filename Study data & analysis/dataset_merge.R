@@ -1,8 +1,9 @@
 pick_fixation_time <- function()
 {
   if (!dir.exists(file.path("..", "Fixation check", "order_files"))) {dir.create(file.path("..", "Fixation check", "order_files"), recursive = TRUE)}
+  if (!dir.exists(file.path("..", "Fixation check", "ET_check"))) {dir.create(file.path("..", "Fixation check", "ET_check"), recursive = TRUE)}
   ET_files         <- list.files(file.path("intermediate_data", "ET"), pattern="*.csv", full.names = TRUE)
-  d_eye_tracking   <- lapply(ET_files, read_csv, comment="#", show_col_types = FALSE)
+  d_eye_tracking   <- lapply(ET_files, read_csv, show_col_types = FALSE)
   idx_name <- 1
   for(d in d_eye_tracking)
   {
@@ -22,7 +23,7 @@ pick_fixation_time <- function()
     N_frames_video <- c()
     for(time in d_fixations$Timestamp)
     {
-      N_frames_video <- c(N_frames_video, (d %>% filter(grepl("Frame", Data, fixed=TRUE), Timestamp<time) %>% slice_tail(1))$Data)
+      N_frames_video <- c(N_frames_video, (d %>% filter(grepl("Frame", Data, fixed=TRUE), Timestamp<time) %>% slice_tail(n=1))$Data)
     }
     d_fixations$N_frame_video <- N_frames_video
     write.csv(d_fixations, file = file.path("..", "Fixation check", "ET_check", file_name), row.names = FALSE)
@@ -39,7 +40,7 @@ extract_dwell_times <- function(dataset, size, start_coordinate, shift_coordinat
   for (j in (seq_len(size) - 1))
   {
     d_match <- dataset %>%
-      mutate(Match = ifelse(Corrected.Gaze.X >= x_left & Corrected.Gaze.X <= x_right & Corrected.Gaze.Y >= floor(start_coordinate + shift_coordinate * j) & Corrected.Gaze.Y <= floor(start_coordinate + shift_coordinate * j) + y_size & !is.na(Corrected.Gaze.Y), TRUE, FALSE))
+      mutate(Match = ifelse(Corrected.Gaze.X >= x_left & Corrected.Gaze.X <= x_right & Corrected.Gaze.Y >= floor(start_coordinate + shift_coordinate * j) & Corrected.Gaze.Y <= floor(start_coordinate + shift_coordinate * j) + y_size & !is.na(Corrected.Gaze.Y) & !is.na(Corrected.Gaze.X), TRUE, FALSE))
     match_first <- (d_match %>%
       filter(Match == TRUE) %>% first())[["Timestamp"]]
     match_last <- (d_match %>%
@@ -89,10 +90,10 @@ datasets_merge <- function()
   y_shift <- 295
   
   ET_files         <- list.files(file.path("intermediate_data", "ET"), pattern="*.csv", full.names = TRUE)
-  d_eye_tracking   <- lapply(ET_files, read_csv, comment="#", show_col_types = FALSE)
+  d_eye_tracking   <- lapply(ET_files, read_csv, show_col_types = FALSE)
   ET_files_names <- basename(ET_files)
   responses_files  <- list.files(file.path("raw_data", "responses"), pattern="*.csv", full.names = TRUE)
-  d_responses      <- lapply(responses_files, read_csv, comment="#", show_col_types = FALSE)
+  d_responses      <- lapply(responses_files, read_csv, show_col_types = FALSE)
   
   for (i in seq_len(length(d_eye_tracking)))
   {
